@@ -1,21 +1,14 @@
-from machine import Pin, I2C
-import ssd1306
-from time import sleep
+# Configuracion inicial
+def connect_to(ssid : "Cooperadora_Alumnos", passwd : "") -> None:
 
-def connect_to(ssid: str, passwd: str) -> str:
-    """Conecta el microcontrolador a la red indicada y retorna la dirección IP asignada.
-    
+    """Conecta el microcontrolador a la red indicada.
+
     Parameters
     ----------
     ssid : str
         Nombre de la red a conectarse
     passwd : str
         Contraseña de la red
-        
-    Returns
-    -------
-    str
-        Dirección IP asignada al microcontrolador
     """
     
     import network
@@ -23,26 +16,14 @@ def connect_to(ssid: str, passwd: str) -> str:
     
     sta_if = network.WLAN(network.STA_IF)
     if not sta_if.isconnected():
+        print("Connecting to network...")
         sta_if.active(True)
         sta_if.connect(ssid, passwd)
         while not sta_if.isconnected():
+            print(".",end="")
             sleep(.05)
+
+    ip = sta_if.ifconfig()[0]
+    print("\nConectado. Dirección IP:", ip)
     
-
-    return sta_if.ifconfig()[0]
-
-print(connect_to("Cooperadora Alumnos", ""))
-i2c = I2C(0, scl=Pin(22), sda=Pin(21))
-oled = ssd1306.SSD1306_I2C(128, 64, i2c)
-ip = connect_to("Cooperadora Alumnos", "")
-
-
-oled.fill(0)  
-oled.text("#tetas", 0, 0)
-oled.show()
-sleep(2)  
-
-oled.fill(0)  
-oled.text("IP:", 0, 0)
-oled.text(ip, 0, 15)  
-oled.show()
+connect_to("Cooperadora Alumnos", "")

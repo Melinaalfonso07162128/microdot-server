@@ -1,31 +1,35 @@
-from microdot import Microdot, Response, send_file
+# Aplicacion del servidor
+import asyncio
+from microdot import Microdot
+from microdot import send_file
 
 app = Microdot()
 
-@app.route('/')
-def index(request):
-    try:
-        return send_file('index.html', content_type='text/html')
-    except Exception as e:
-        print(f"Error al cargar index.html: {e}")
-        return "Error al cargar la página", 500
+@app.get('/')
+async def index(request):
+    return send_file('index.html')
 
-@app.route('/base.css')
-def css(request):
-    try:
-        return send_file('base.css', content_type='text/css')
-    except Exception as e:
-        print(f"Error al cargar base.css: {e}")
-        return "Error al cargar el CSS", 500
-    
-@app.route('/actividad01.js')
-def css(request):
-    try:
-        return send_file('actividad01.js', content_type='text/css')
-    except Exception as e:
-        print(f"Error al cargar el scripts: {e}")
-        return "Error al cargar el scripts", 500
+@app.get('/styles/base.css')
+async def index(request):
+    return send_file('styles/base.css')
 
+@app.get('/scripts/base.js')
+async def index(request):
+    return send_file('scripts/base.js')
 
-print("Iniciando servidor en 0.0.0.0:5000...")
-app.run(debug=True)
+@app.get('/')
+async def image(request):
+    return send_file('/static/image.jpg', max_age=3600)  # in seconds
+
+app.run()
+
+async def main():
+    # start the server in a background task
+    server = asyncio.create_task(app.start_server())
+
+    # ... do other asynchronous work here ...
+
+    # cleanup before ending the application
+    await server
+
+asyncio.run(main())
